@@ -2,8 +2,12 @@ name: Leaflow Auto Checkin
 
 on:
   schedule:
-    - cron: '0 1 * * *' # 每天UTC时间01:00运行（北京时间09:00）
+    - cron: '0 1 * * *' # 每天北京时间09:00运行
   workflow_dispatch:  # 允许手动触发
+
+# 1. 添加读写权限声明，防止 Fork 仓库报错
+permissions:
+  contents: write
 
 jobs:
   checkin:
@@ -14,14 +18,14 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5 # 升级到 v5 更稳定
       with:
         python-version: '3.11'
         
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         
     - name: Install Chrome
       run: |
@@ -38,3 +42,11 @@ jobs:
         GITHUB_ACTIONS: true
       run: |
         python leaflow_checkin.py
+
+    # 2. 添加自动续命步骤
+    - name: Keepalive Workflow
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit --allow-empty -m "Chore: Keep-alive [skip ci]"
+        git push || echo "No changes to push"
