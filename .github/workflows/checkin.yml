@@ -2,7 +2,7 @@ name: Leaflow Auto Checkin
 
 on:
   schedule:
-    - cron: '0 1 * * *' # 每天北京时间09:00运行
+    - cron: '0 6 * * *' # 每天北京时间09:00运行
   workflow_dispatch:  # 允许手动触发
 
 # 1. 添加读写权限声明，防止 Fork 仓库报错
